@@ -1,6 +1,6 @@
 import { _avatars } from "../utils/avatars";
 import Title from "../components/common/Title";
-import { Warrior } from "../utils/warriors";
+import { Warrior } from "../components/Router";
 import { Fight } from "../components/Router";
 import {
     Grid,

@@ -1,6 +1,6 @@
 import { _avatars } from "../utils/avatars";
 import Title from "../components/common/Title";
-import { warriorAttacks } from "../utils/warriors";
+import { warriorAttacks } from "../utils/warriorAttacks";
 import {
     Grid,
 } from "@mui/material";

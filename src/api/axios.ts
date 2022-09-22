@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Warrior } from "../utils/warriors";
+import { Warrior } from "../components/Router";
 
 const apiUrl: string =
   "https://recruitment-test.ants.house/jsonrpc2/whawhai/v1";

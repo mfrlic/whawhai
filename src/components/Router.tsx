@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Warrior } from "../utils/warriors";
 import { Register, Status } from "../api/axios";
 import Dialog from "./common/Dialog";
 import { errors } from "../utils/errors";
@@ -8,6 +7,12 @@ import SelectWarrior from "../views/SelectWarrior";
 import Waiting from "../views/Waiting";
 import Fighting from "../views/Fighting";
 import Done from "../views/Done";
+
+export interface Warrior {
+  name: string;
+  warriorType: number;
+  attacks: number[];
+}
 
 interface FightWarrior {
   Name: string;

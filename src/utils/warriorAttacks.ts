@@ -1,9 +1,3 @@
-export interface Warrior {
-  name: string;
-  warriorType: number;
-  attacks: number[];
-}
-
 export const warriorAttacks: string[][] = [
   ["Cyber", "System32 Error", "Norton Antivirus"],
   //hackerman

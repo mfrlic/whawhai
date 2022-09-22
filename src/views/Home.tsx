@@ -3,10 +3,11 @@ import Title from "../components/common/Title";
 import Input from "../components/common/Input";
 import Select from "../components/common/Select";
 import { _colors } from "../utils/colors";
-import { warriorAttacks, Warrior } from "../utils/warriors";
+import { warriorAttacks } from "../utils/warriorAttacks";
 import Button from "../components/common/Button";
 import Avatar from "../components/common/Avatar";
 import { useState } from "react";
+import { Warrior } from "../components/Router";
 
 const Home = ({ warrior, setWarriorSelection, setWarrior, validateForm }: { warrior: Warrior, setWarriorSelection: React.Dispatch<React.SetStateAction<boolean>>, setWarrior: React.Dispatch<React.SetStateAction<Warrior>>, validateForm: () => void }) => {
     const [attackSelect, setAttackSelect] = useState<number>(0)
