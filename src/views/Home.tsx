@@ -5,11 +5,12 @@ import Select from "../components/common/Select";
 import { _colors } from "../utils/colors";
 import { warriorAttacks, Warrior } from "../utils/warriors";
 import Button from "../components/common/Button";
-import {
-    Avatar,
-} from "@mui/material";
+import Avatar from "../components/common/Avatar";
+import { useState } from "react";
 
 const Home = ({ warrior, setWarriorSelection, setWarrior, validateForm }: { warrior: Warrior, setWarriorSelection: React.Dispatch<React.SetStateAction<boolean>>, setWarrior: React.Dispatch<React.SetStateAction<Warrior>>, validateForm: () => void }) => {
+    const [attackSelect, setAttackSelect] = useState<number>(0)
+
     return (
         <>
             <Title>Whawhai</Title>
@@ -22,10 +23,13 @@ const Home = ({ warrior, setWarriorSelection, setWarrior, validateForm }: { warr
                     }}
                 >
                     <Avatar
-                        sx={{ width: 100, height: 100 }}
+                        name=""
+                        size="md"
                         src={_avatars[warrior.warriorType]}
+                        hover="true"
                         onClick={() => setWarriorSelection(true)}
                     />
+
                     <Input
                         placeholder="$WARRIOR-NAME"
                         value={warrior.name}
@@ -42,59 +46,60 @@ const Home = ({ warrior, setWarriorSelection, setWarrior, validateForm }: { warr
                         marginTop: 20,
                     }}
                 >
-                    {warrior.attacks.map((attack, index) => (
-                        <div
-                            key={attack + index}
+                    {attackSelect === 0 ? warrior.attacks.map((attack, index) => (
+                        <Select
+                            key={"sel" + attack + index}
+
                             style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
+                                backgroundColor:
+                                    index === 0
+                                        ? _colors.secondary
+                                        : index === 1
+                                            ? _colors.secondary80
+                                            : _colors.secondary60,
                             }}
+                            value={attack}
+                            onClick={() => setAttackSelect(index + 1)}
                         >
-                            <Select
-                                style={{
-                                    backgroundColor:
-                                        index === 0
-                                            ? _colors.secondary
-                                            : index === 1
-                                                ? _colors.secondary80
-                                                : _colors.secondary60,
-                                }}
-                                value={attack}
-                                onChange={(e) =>
-                                    setWarrior((old) => {
-                                        return {
-                                            ...old,
-                                            attacks: [
-                                                index === 0
-                                                    ? parseInt(e.target.value)
-                                                    : old.attacks[0],
-                                                index === 1
-                                                    ? parseInt(e.target.value)
-                                                    : old.attacks[1],
-                                                index === 2
-                                                    ? parseInt(e.target.value)
-                                                    : old.attacks[2],
-                                            ],
-                                        };
-                                    })
-                                }
-                            >
-                                <option value={-99} disabled>
-                                    Attack for round #{index + 1}
-                                </option>
-                                {warriorAttacks[warrior.warriorType].map((key, i) => (
-                                    <option value={i} key={key + i}>
-                                        {key}
-                                    </option>
-                                ))}
-                            </Select>
-                        </div>
+                            {attack === -99 ? "Attack for round #" + (index + 1) : warriorAttacks[warrior.warriorType][attack]}
+                        </Select>
+                    )) : warriorAttacks[warrior.warriorType].map((key, i) => (
+                        <Select
+                            style={{
+                                backgroundColor: warrior.attacks[attackSelect - 1] === i ? _colors.green : i === 0
+                                    ? _colors.secondary
+                                    : i === 1
+                                        ? _colors.secondary80
+                                        : _colors.secondary60,
+                            }}
+                            value={i}
+                            key={"opt" + key + i}
+                            onClick={() => {
+                                setWarrior((old) => {
+                                    return {
+                                        ...old,
+                                        attacks: [
+                                            attackSelect === 1
+                                                ? i
+                                                : old.attacks[0],
+                                            attackSelect === 2
+                                                ? i
+                                                : old.attacks[1],
+                                            attackSelect === 3
+                                                ? i
+                                                : old.attacks[2],
+                                        ],
+                                    };
+                                });
+                                setAttackSelect(0);
+                            }
+                            }
+                        >
+                            {key}
+                        </Select>
                     ))}
                 </div>
-                <div style={{ marginTop: 30 }}>
-                    <Button onClick={validateForm}>Fight!!!</Button>
-                </div>
+                <Button onClick={validateForm} style={{ marginTop: 30 }}>Fight!!!</Button>
             </div>
         </>
     );

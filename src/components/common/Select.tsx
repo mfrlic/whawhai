@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import { _colors } from "../../utils/colors";
 
-const Select = styled("select")({
+const Select = styled("button")({
   borderRadius: 0,
   border: "none",
   outline: "none",

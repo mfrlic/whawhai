@@ -1,11 +1,10 @@
 import { _avatars } from "../utils/avatars";
 import Title from "../components/common/Title";
-import {Warrior } from "../utils/warriors";
+import { Warrior } from "../utils/warriors";
 import {
-    Avatar, Grid,
+    Grid,
 } from "@mui/material";
-
-
+import Avatar from "../components/common/Avatar";
 
 const SelectWarrior = ({ warrior, setWarriorSelection, setWarrior }: { warrior: Warrior, setWarriorSelection: React.Dispatch<React.SetStateAction<boolean>>, setWarrior: React.Dispatch<React.SetStateAction<Warrior>> }) => {
     return (
@@ -19,7 +18,7 @@ const SelectWarrior = ({ warrior, setWarriorSelection, setWarrior }: { warrior: 
                     (key, index) =>
                         index !== warrior.warriorType && (
                             <Grid
-                                key={key + index}
+                                key={key}
                                 item
                                 xs={6}
                                 style={{
@@ -30,8 +29,10 @@ const SelectWarrior = ({ warrior, setWarriorSelection, setWarrior }: { warrior: 
                                 }}
                             >
                                 <Avatar
-                                    sx={{ width: 100, height: 100 }}
+                                    name=""
+                                    size="lg"
                                     src={_avatars[index]}
+                                    hover="true"
                                     onClick={() => {
                                         setWarrior((old) => {
                                             return {

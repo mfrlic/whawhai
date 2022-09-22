@@ -24,7 +24,7 @@ export const Status = (fightId: string) =>
     },
   });
 
-export const Cancel = (fightId: string) => {
+export const Cancel = (fightId: string) =>
   axios
     .post(apiUrl, {
       jsonrpc: "2.0",
@@ -34,5 +34,4 @@ export const Cancel = (fightId: string) => {
         id: fightId,
       },
     })
-    .then((result) => console.log(result));
-};
+

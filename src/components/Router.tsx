@@ -36,6 +36,8 @@ const Router = () => {
     attacks: [-99, -99, -99],
   });
 
+  const timeout: number = 2000;
+
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [warriorSelection, setWarriorSelection] = useState<boolean>(false);
   const [waitingScreen, setWaitingScreen] = useState<boolean>(false);
@@ -62,22 +64,30 @@ const Router = () => {
     const interval = setInterval(() => {
       if ((waitingScreen || fightingScreen) && currentFightId) {
         Status(currentFightId).then((result) => {
-          if (result.data.result.fight.Status === 1) {
-            setWaitingScreen(false);
-            setFightingScreen(true);
-            setDoneScreen(false);
-            setFightResult(result.data.result.fight);
+          if (result.data.result) {
+            if (result.data.result.fight.Status === 1) {
+              setWaitingScreen(false);
+              setFightingScreen(true);
+              setDoneScreen(false);
+              setFightResult(result.data.result.fight);
+            }
+            if (result.data.result.fight.Status === 2) {
+              setDialogOpen(false);
+              setWaitingScreen(false);
+              setFightingScreen(false);
+              setDoneScreen(true);
+              setFightResult(result.data.result.fight);
+            }
           }
-          if (result.data.result.fight.Status === 2) {
-            setDialogOpen(false);
-            setWaitingScreen(false);
-            setFightingScreen(false);
-            setDoneScreen(true);
-            setFightResult(result.data.result.fight);
+          else if (result.data.error) {
+            setSeverity("error");
+            setMessage(result.data.error.message);
+            setDialogOpen(true);
           }
-        });
+        }
+        );
       }
-    }, 1000);
+    }, timeout);
     return () => clearInterval(interval);
   }, [waitingScreen, fightingScreen, currentFightId]);
 
@@ -97,8 +107,8 @@ const Router = () => {
       }
       case 2: {
         if (r.Warrior2Attack === 0) return 2; //rock - paper: w2
-        else if (r.Warrior2Attack === 1) return 1; //scissors - scissors - w1
-        else if (r.Warrior2Attack === 2) return 0; //scissors - rock - tie
+        else if (r.Warrior2Attack === 1) return 1; //rock - scissors - w1
+        else if (r.Warrior2Attack === 2) return 0; //rock - rock - tie
         break;
       }
     }
@@ -110,7 +120,6 @@ const Router = () => {
     fightResult.Rounds.map((round) =>
       winner.push(roundWinner(round))
     );
-    console.log(winner);
     return winner;
   };
 
@@ -129,11 +138,6 @@ const Router = () => {
     return 99;
   };
 
-  useEffect(() => {
-    if (doneScreen) {
-    }
-  }, [doneScreen]);
-
   const validateForm = () => {
     let err: number = 0;
     if (
@@ -147,11 +151,17 @@ const Router = () => {
     else if (!warriorAttacksSet.has(warrior.attacks[2])) err = 7
     if (err === 0) {
       Register(warrior).then((result) => {
-        if (result.data.result.id) {
+        if (result.data.result) {
           setCurrentFightId(result.data.result.id);
           setWaitingScreen(true);
         }
-      });
+        else if (result.data.error) {
+          setSeverity("error");
+          setMessage(result.data.error.message);
+          setDialogOpen(true);
+        }
+      }
+      );
     } else { setMessage(errors[err - 1]); setSeverity("error"); setDialogOpen(true) };
   };
 
@@ -167,7 +177,7 @@ const Router = () => {
       {warriorSelection ? (
         <SelectWarrior warrior={warrior} setWarrior={setWarrior} setWarriorSelection={setWarriorSelection} />
       ) : waitingScreen ? (
-        <Waiting warrior={warrior} currentFightId={currentFightId} setCurrentFightId={setCurrentFightId} setWaitingScreen={setWaitingScreen} />
+        <Waiting warrior={warrior} currentFightId={currentFightId} setCurrentFightId={setCurrentFightId} setWaitingScreen={setWaitingScreen} setSeverity={setSeverity} setMessage={setMessage} setDialogOpen={setDialogOpen} />
       ) : fightingScreen && fightResult ? (
         <Fighting warrior={warrior} fightResult={fightResult} setSeverity={setSeverity} setMessage={setMessage} setDialogOpen={setDialogOpen} />
       ) : doneScreen ? (

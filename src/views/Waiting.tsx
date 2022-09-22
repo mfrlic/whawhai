@@ -2,103 +2,71 @@ import { _avatars } from "../utils/avatars";
 import Title from "../components/common/Title";
 import { Warrior } from "../utils/warriors";
 import {
-    Avatar, Grid,
+    Grid,
 } from "@mui/material";
 import Button from "../components/common/Button";
-import { _colors } from "../utils/colors";
+import Avatar from "../components/common/Avatar";
 import { Cancel } from "../api/axios";
+import { CssGrid } from "../components/common/Grid";
+import { GreenBox } from "../components/common/GreenBox";
 
-
-
-const Waiting = ({ warrior, currentFightId, setCurrentFightId, setWaitingScreen }: { warrior: Warrior, currentFightId: string, setCurrentFightId: React.Dispatch<React.SetStateAction<string>>, setWaitingScreen: React.Dispatch<React.SetStateAction<boolean>> }) => {
+const Waiting = ({ warrior, currentFightId, setCurrentFightId, setWaitingScreen, setSeverity, setMessage, setDialogOpen }: { warrior: Warrior, currentFightId: string, setCurrentFightId: React.Dispatch<React.SetStateAction<string>>, setWaitingScreen: React.Dispatch<React.SetStateAction<boolean>>, setSeverity: React.Dispatch<React.SetStateAction<string>>, setMessage: React.Dispatch<React.SetStateAction<string>>, setDialogOpen: React.Dispatch<React.SetStateAction<boolean>> }) => {
     return (
         <>
             <Title>Pakipaki</Title>
             <Grid container>
-                <Grid
+                <CssGrid
                     item
                     xs={4}
-                    style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: 35,
-                        color: _colors.secondary,
-                    }}
                 >
-                    <div>{warrior.name}</div>
                     <Avatar
-                        sx={{ width: 100, height: 100 }}
+                        name={warrior.name}
+                        size="md"
                         src={_avatars[warrior.warriorType]}
                     />
-                </Grid>
-                <Grid
+                </CssGrid>
+                <CssGrid
                     item
                     xs={4}
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: 35,
-                        color: _colors.secondary,
-                    }}
+                    style={{ fontSize: 70 }}
                 >
-                    <div>VS</div>
-                </Grid>
-                <Grid
+                    VS
+                </CssGrid>
+                <CssGrid
                     item
                     xs={4}
-                    style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: 35,
-                        color: _colors.secondary,
-                    }}
                 >
-                    <div>Unknown</div>
                     <Avatar
-                        sx={{
-                            border: "2px solid #000",
-                            width: 96,
-                            height: 96,
-                            color: _colors.secondary,
-                            fontFamily: "inherit",
-                            fontSize: 75,
-                        }}
-                    >
-                        ?
-                    </Avatar>
-                </Grid>
+                        name="Unknown"
+                        size="unknown"
+                    />
+                </CssGrid>
             </Grid>
 
-            <div
-                style={{
-                    color: "white",
-                    background: _colors.green,
-                    width: "100%",
-                    textAlign: "center",
-                    padding: 20,
-                    marginTop: 20,
-                    fontSize: 40,
-                }}
-            >
+            <GreenBox>
                 Waiting for 2nd player to join
-            </div>
+            </GreenBox>
 
-            <div style={{ marginTop: 30 }}>
-                <Button
-                    onClick={() => {
-                        Cancel(currentFightId);
+            <Button
+                onClick={() => {
+                    let err: boolean = false;
+                    Cancel(currentFightId).then(result => {
+                        if (result.data.error) {
+                            setSeverity("error");
+                            setMessage(result.data.error.message);
+                            setDialogOpen(true);
+                            err = true;
+                        }
+                    });
+                    if (!err) {
                         setCurrentFightId("");
                         setWaitingScreen(false);
-                    }}
-                >
-                    Panic!!!
-                </Button>
-            </div>
+                    }
+                }}
+                style={{ marginTop: 30 }}
+            >
+                Panic!!!
+            </Button>
         </>
     );
 };

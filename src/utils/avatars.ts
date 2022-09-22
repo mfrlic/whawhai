@@ -4,4 +4,4 @@ import tesla from "../icons/avatar_tesla.svg";
 import hackerman from "../icons/avatar_hackerman.svg";
 import unicorn from "../icons/avatar_unicorn.svg";
 
-export const _avatars = [hackerman, marvin, tesla, dragon, unicorn];
+export const _avatars: string[] = [hackerman, marvin, tesla, dragon, unicorn];
