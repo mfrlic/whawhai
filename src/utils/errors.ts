@@ -1,3 +1,4 @@
+//error messages for validateForm()
 export const errors: string[] = [
     "Enter a name!",
     "Name too long!",

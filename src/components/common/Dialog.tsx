@@ -23,7 +23,7 @@ const CssDialog = styled(MUIDialog)(({ severity }: { severity: string }) => ({
       alignItems: "center",
       justifyContent: "center",
       fontFamily: "Roboto, sans-serif",
-      color:  severity === "error" ? _colors.primary : "#000",
+      color:  severity === "error" ? _colors.primary : _colors.tertiary,
       fontWeight: 600,
       fontSize: 26,
       padding: 80,

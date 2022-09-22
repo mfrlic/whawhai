@@ -8,50 +8,52 @@ import Waiting from "../views/Waiting";
 import Fighting from "../views/Fighting";
 import Done from "../views/Done";
 
-export interface Warrior {
-  name: string;
-  warriorType: number;
-  attacks: number[];
-}
 
-interface FightWarrior {
+//Warrior - object sent to the Register method as application and received in fight report
+export interface Warrior {
   Name: string;
   WarriorType: number;
   Attacks: number[];
 }
 
+//Round - defines one of 3 rounds in a match
 interface Round {
   Warrior1Attack: number;
   Warrior2Attack: number;
 }
 
+//Fight - received as a reply from the Status method
 export interface Fight {
   ID: string;
   Status: number;
-  Warrior1: FightWarrior;
-  Warrior2: FightWarrior;
+  Warrior1: Warrior;
+  Warrior2: Warrior;
   Rounds: Round[];
-  Err?: any;
+  Err?: any; //?
 }
 
 const Router = () => {
+  //warrior - stores your warrior information, send to Register method
   const [warrior, setWarrior] = useState<Warrior>({
-    name: "",
-    warriorType: 0,
-    attacks: [-99, -99, -99],
+    Name: "",
+    WarriorType: 0,
+    Attacks: [-99, -99, -99],
   });
 
+  //frequency of checking the fight status while waiting for the fight to be concluded (ms)
   const timeout: number = 2000;
 
-  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-  const [warriorSelection, setWarriorSelection] = useState<boolean>(false);
-  const [waitingScreen, setWaitingScreen] = useState<boolean>(false);
-  const [fightingScreen, setFightingScreen] = useState<boolean>(false);
-  const [doneScreen, setDoneScreen] = useState<boolean>(false);
+  //used instead of react-router-dom so that everything is under "/"
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false); //dialog trigger
+  const [warriorSelection, setWarriorSelection] = useState<boolean>(false); //switch to SelectWarrior
+  const [waitingScreen, setWaitingScreen] = useState<boolean>(false); //switch to Waiting
+  const [fightingScreen, setFightingScreen] = useState<boolean>(false); //switch to Fighting
+  const [doneScreen, setDoneScreen] = useState<boolean>(false); //switch to Done
 
-  const [message, setMessage] = useState<string>("")
-  const [severity, setSeverity] = useState<string>("info")
+  const [message, setMessage] = useState<string>("") //message to display in the modal
+  const [severity, setSeverity] = useState<string>("info") //severity of the modal - "error" or info(any)
 
+  //storing the fight result received as a reply from the Status method
   const [fightResult, setFightResult] = useState<Fight>({
     ID: "",
     Status: 0,
@@ -60,31 +62,35 @@ const Router = () => {
     Rounds: [{ Warrior1Attack: 0, Warrior2Attack: 0 }],
   });
 
+  //sets used to check if the numbers in warrior.WarriorType and warrior.Attacks are valid 
+  //easier and cleaner to use - Set.has(x)
   const warriorTypeSet: Set<number> = new Set([0, 1, 2, 3, 4]);
   const warriorAttacksSet: Set<number> = new Set([0, 1, 2]);
 
+  //storing the fight id generated in the Register method reply
   const [currentFightId, setCurrentFightId] = useState<string>("");
 
+  //loop for checking and handling the fight result - occurres every {timeout} ms
   useEffect(() => {
     const interval = setInterval(() => {
-      if ((waitingScreen || fightingScreen) && currentFightId) {
+      if ((waitingScreen || fightingScreen) && currentFightId) { //if not on Waiting or Fighting screen - stop here
         Status(currentFightId).then((result) => {
-          if (result.data.result) {
-            if (result.data.result.fight.Status === 1) {
+          if (result.data.result) { //is fulfilled?
+            if (result.data.result.fight.Status === 1) { //fighting in progress
               setWaitingScreen(false);
               setFightingScreen(true);
               setDoneScreen(false);
               setFightResult(result.data.result.fight);
             }
-            if (result.data.result.fight.Status === 2) {
-              setDialogOpen(false);
+            if (result.data.result.fight.Status === 2) { //fighting finished
+              setDialogOpen(false); //close the possibly triggered surrender dialog as the results are in
               setWaitingScreen(false);
               setFightingScreen(false);
               setDoneScreen(true);
               setFightResult(result.data.result.fight);
             }
           }
-          else if (result.data.error) {
+          else if (result.data.error) { //error handling
             setSeverity("error");
             setMessage(result.data.error.message);
             setDialogOpen(true);
@@ -93,68 +99,74 @@ const Router = () => {
         );
       }
     }, timeout);
-    return () => clearInterval(interval);
-  }, [waitingScreen, fightingScreen, currentFightId]);
+    return () => clearInterval(interval); //key to making this a loop
+  }, [waitingScreen, fightingScreen, currentFightId]); //deps
 
-  const roundWinner = (r: Round): number => {
-    switch (r.Warrior1Attack) {
-      case 0: {
-        if (r.Warrior2Attack === 0) return 0; //paper - paper: tie
-        else if (r.Warrior2Attack === 1) return 2; //paper - scissors - w2
-        else if (r.Warrior2Attack === 2) return 1; //paper - rock - w1
-        break;
-      }
-      case 1: {
-        if (r.Warrior2Attack === 0) return 1; //scissors - paper: w1
-        else if (r.Warrior2Attack === 1) return 0; //scissors - scissors - tie
-        else if (r.Warrior2Attack === 2) return 2; //scissors - rock - w2
-        break;
-      }
-      case 2: {
-        if (r.Warrior2Attack === 0) return 2; //rock - paper: w2
-        else if (r.Warrior2Attack === 1) return 1; //rock - scissors - w1
-        else if (r.Warrior2Attack === 2) return 0; //rock - rock - tie
-        break;
-      }
-    }
-    return 99;
-  };
-
+  //returns winners by rounds and overall
   const calculateWinner = () => {
-    let winner: number[] = [];
-    fightResult.Rounds.map((round) =>
-      winner.push(roundWinner(round))
-    );
-    return winner;
-  };
+    const roundWinner = (r: Round): number => { //calculates the winner for each round
+      switch (r.Warrior1Attack) {
+        case 0: {
+          if (r.Warrior2Attack === 0) return 0; //paper - paper: tie
+          else if (r.Warrior2Attack === 1) return 2; //paper - scissors - w2
+          else if (r.Warrior2Attack === 2) return 1; //paper - rock - w1
+          break;
+        }
+        case 1: {
+          if (r.Warrior2Attack === 0) return 1; //scissors - paper: w1
+          else if (r.Warrior2Attack === 1) return 0; //scissors - scissors - tie
+          else if (r.Warrior2Attack === 2) return 2; //scissors - rock - w2
+          break;
+        }
+        case 2: {
+          if (r.Warrior2Attack === 0) return 2; //rock - paper: w2
+          else if (r.Warrior2Attack === 1) return 1; //rock - scissors - w1
+          else if (r.Warrior2Attack === 2) return 0; //rock - rock - tie
+          break;
+        }
+      }
+      return -99;
+    };
 
-  const calculateMatchWinner = () => {
-    let winner: number[] = [];
-    let counts: number[] = [0, 0, 0];
+    let winner: number[] = []; //winners of each round, example 
+    //[0,1,2] - round 1-tie, 2-player1, 3-player2
+
+    let counts: number[] = [0, 0, 0]; //frequency of rounds won, example
+    //[2,1,0] - 2 rounds were tied, player1 won 1 round - player1 wins
+
     fightResult.Rounds.map((round) =>
-      winner.push(roundWinner(round))
+      winner.push(roundWinner(round)) //populate the round winners array
     );
+
     for (const num of winner) {
-      counts[num] = counts[num] ? counts[num] + 1 : 1;
+      counts[num] = counts[num] ? counts[num] + 1 : 1; //count frequency of rounds won
     }
-    if (counts[1] > 1 || (counts[1] > 0 && counts[0] > 1)) return 1;
-    else if (counts[2] > 1 || (counts[2] > 0 && counts[0] > 1)) return 2;
-    else if (counts[0] > 1) return 0;
-    return 99;
+
+    //player1 won at least 2 rounds or he won 1 and tied 2 - player1 wins
+    if (counts[1] > 1 || (counts[1] > 0 && counts[0] > 1)) return { roundWinners: winner, matchWinner: 1 };
+
+    //player2 won at least 2 rounds or he won 1 and tied 2 - player2 wins 
+    else if (counts[2] > 1 || (counts[2] > 0 && counts[0] > 1)) return { roundWinners: winner, matchWinner: 2 };
+
+    //none of the above happened, players are tied
+    else if (counts[0] > 1) return { roundWinners: winner, matchWinner: 0 };
+
+    return { roundWinners: winner, matchWinner: 0 };
   };
 
+  //check if warrior object is ready to be sent to the server - if yes, send it
   const validateForm = () => {
-    let err: number = 0;
+    let err: number = 0; //error code as defined in errors.ts
     if (
-      warrior.name.length <= 0) err = 1
+      warrior.Name.length <= 0) err = 1 //no name input
     else if (
-      warrior.name.length >= 26) err = 2
-    else if (!warriorTypeSet.has(warrior.warriorType)) err = 3
-    else if (warrior.attacks.length !== 3) err = 4
-    else if (!warriorAttacksSet.has(warrior.attacks[0])) err = 5
-    else if (!warriorAttacksSet.has(warrior.attacks[1])) err = 6
-    else if (!warriorAttacksSet.has(warrior.attacks[2])) err = 7
-    if (err === 0) {
+      warrior.Name.length >= 26) err = 2 //name too long
+    else if (!warriorTypeSet.has(warrior.WarriorType)) err = 3 //invalid warrior type - unlikely
+    else if (warrior.Attacks.length !== 3) err = 4 //invalid length of the Attacks array - unlikely
+    else if (!warriorAttacksSet.has(warrior.Attacks[0])) err = 5 //warrior attack #x is not selected
+    else if (!warriorAttacksSet.has(warrior.Attacks[1])) err = 6
+    else if (!warriorAttacksSet.has(warrior.Attacks[2])) err = 7
+    if (err === 0) { //no error
       Register(warrior).then((result) => {
         if (result.data.result) {
           setCurrentFightId(result.data.result.id);
@@ -167,7 +179,7 @@ const Router = () => {
         }
       }
       );
-    } else { setMessage(errors[err - 1]); setSeverity("error"); setDialogOpen(true) };
+    } else { setMessage(errors[err - 1]); setSeverity("error"); setDialogOpen(true) }; //display error
   };
 
   return (
@@ -186,7 +198,7 @@ const Router = () => {
       ) : fightingScreen && fightResult ? (
         <Fighting warrior={warrior} fightResult={fightResult} setSeverity={setSeverity} setMessage={setMessage} setDialogOpen={setDialogOpen} />
       ) : doneScreen ? (
-        <Done fightResult={fightResult} calculateMatchWinner={calculateMatchWinner} calculateWinner={calculateWinner} setDoneScreen={setDoneScreen} setWaitingScreen={setWaitingScreen} validateForm={validateForm} />
+        <Done fightResult={fightResult} calculateWinner={calculateWinner} setDoneScreen={setDoneScreen} setWaitingScreen={setWaitingScreen} validateForm={validateForm} />
       ) : (
         <Home warrior={warrior} setWarrior={setWarrior} setWarriorSelection={setWarriorSelection} validateForm={validateForm} />
       )}

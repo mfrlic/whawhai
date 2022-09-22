@@ -16,7 +16,7 @@ const SelectWarrior = ({ warrior, setWarriorSelection, setWarrior }: { warrior: 
             <Grid container>
                 {_avatars.map(
                     (key, index) =>
-                        index !== warrior.warriorType && (
+                        index !== warrior.WarriorType && (
                             <Grid
                                 key={key}
                                 item
@@ -37,8 +37,8 @@ const SelectWarrior = ({ warrior, setWarriorSelection, setWarrior }: { warrior: 
                                         setWarrior((old) => {
                                             return {
                                                 ...old,
-                                                warriorType: index,
-                                                attacks: [-99, -99, -99],
+                                                WarriorType: index,
+                                                Attacks: [-99, -99, -99],
                                             };
                                         });
                                         setWarriorSelection(false);

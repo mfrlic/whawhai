@@ -17,27 +17,27 @@ const Fighting = ({ warrior, fightResult, setSeverity, setMessage, setDialogOpen
             <Grid container>
                 <CssGrid
                     item
-                    xs={4}
+                    xs={5}
                 >
                     <Avatar
-                        size="md"
+                        size="lg"
                         name={fightResult.Warrior1.Name}
                         src={_avatars[fightResult.Warrior1.WarriorType]}
                     />
                 </CssGrid>
                 <CssGrid
                     item
-                    xs={4}
+                    xs={2}
                     style={{fontSize: 70}}
                 >
                     VS
                 </CssGrid>
                 <CssGrid
                     item
-                    xs={4}
+                    xs={5}
                 >
                     <Avatar
-                        size="md"
+                        size="lg"
                         name={fightResult.Warrior2.Name}
                         src={_avatars[fightResult.Warrior2.WarriorType]}
                     />
@@ -47,7 +47,7 @@ const Fighting = ({ warrior, fightResult, setSeverity, setMessage, setDialogOpen
             <GreenBox
             >
                 Beating the shit out of "
-                {fightResult.Warrior1.Name === warrior.name
+                {fightResult.Warrior1.Name === warrior.Name
                     ? fightResult.Warrior2.Name
                     : fightResult.Warrior1.Name}"
             </GreenBox>

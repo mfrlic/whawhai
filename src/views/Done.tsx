@@ -10,44 +10,36 @@ import { Fight } from "../components/Router";
 import { CssGrid } from "../components/common/Grid";
 import Avatar from "../components/common/Avatar";
 
-const Done = ({ fightResult, calculateMatchWinner, calculateWinner, setDoneScreen, setWaitingScreen, validateForm }: { fightResult: Fight, calculateMatchWinner: () => number, calculateWinner: () => number[], setDoneScreen: React.Dispatch<React.SetStateAction<boolean>>, setWaitingScreen: React.Dispatch<React.SetStateAction<boolean>>, validateForm: () => void }) => {
+const Done = ({ fightResult, calculateWinner, setDoneScreen, setWaitingScreen, validateForm }: { fightResult: Fight, calculateWinner: () => { roundWinners: number[], matchWinner: number }, setDoneScreen: React.Dispatch<React.SetStateAction<boolean>>, setWaitingScreen: React.Dispatch<React.SetStateAction<boolean>>, validateForm: () => void }) => {
     return (
         <>
             <Title>Pakipaki</Title>
             <Grid container>
                 <CssGrid
                     item
-                    xs={4}
+                    xs={5}
                 >
                     <Avatar
-                        size="md"
-                        winner={calculateMatchWinner() === 1 ? "true" : undefined}
+                        size="lg"
+                        winner={calculateWinner().matchWinner === 1 ? "true" : undefined}
                         name={fightResult.Warrior1.Name}
                         src={_avatars[fightResult.Warrior1.WarriorType]}
                     />
                 </CssGrid>
                 <CssGrid
                     item
-                    xs={4}
+                    xs={2}
                     style={{ fontSize: 70 }}
                 >
                     VS
                 </CssGrid>
                 <CssGrid
                     item
-                    xs={4}
-                    style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: 35,
-                        color: _colors.secondary,
-                    }}
+                    xs={5}
                 >
                     <Avatar
-                        size="md"
-                        winner={calculateMatchWinner() === 2 ? "true" : undefined}
+                        size="lg"
+                        winner={calculateWinner().matchWinner === 2 ? "true" : undefined}
                         name={fightResult.Warrior2.Name}
                         src={_avatars[fightResult.Warrior2.WarriorType]}
                     />
@@ -70,7 +62,7 @@ const Done = ({ fightResult, calculateMatchWinner, calculateWinner, setDoneScree
                         <span
                             style={{
                                 opacity:
-                                    calculateWinner()[i] === 0 || calculateWinner()[i] === 1
+                                    calculateWinner().roundWinners[i] === 0 || calculateWinner().roundWinners[i] === 1
                                         ? 1
                                         : 0.7,
                             }}
@@ -85,7 +77,7 @@ const Done = ({ fightResult, calculateMatchWinner, calculateWinner, setDoneScree
                         <span
                             style={{
                                 opacity:
-                                    calculateWinner()[i] === 0 || calculateWinner()[i] === 2
+                                    calculateWinner().roundWinners[i] === 0 || calculateWinner().roundWinners[i] === 2
                                         ? 1
                                         : 0.7,
                             }}
@@ -102,7 +94,7 @@ const Done = ({ fightResult, calculateMatchWinner, calculateWinner, setDoneScree
 
             <Button
                 onClick={() => {
-                    validateForm()
+                    validateForm() //calls Register and starts again
                     setDoneScreen(false);
                     setWaitingScreen(true);
                 }}

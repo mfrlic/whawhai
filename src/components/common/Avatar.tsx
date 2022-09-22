@@ -3,15 +3,16 @@ import { Avatar as MUIAvatar } from "@mui/material";
 import { _colors } from "../../utils/colors";
 
 const CssAvatar = styled(MUIAvatar)(({ size, hover, winner }: { size: string, hover?: string, winner?: string }) => ({
-    width: (size === "unknown" ? 96 : size === "lg" ? 150 : 100),
-    height: (size === "unknown" ? 96 : size === "lg" ? 150 : 100),
+    width: (size === "unknown" ? 146 : size === "lg" ? 150 : 100),
+    height: (size === "unknown" ? 146 : size === "lg" ? 150 : 100),
     transition: "0.3s",
     // unknown - font
     color: _colors.secondary,
     fontFamily: "inherit",
-    fontSize: 75,
+    fontSize: 90,
     // 
-    border: size === "unknown" ? "2px solid #000" : winner ? "3px solid" + _colors.green : "",
+    marginBottom: !winner ? 40 : 0,
+    border: size === "unknown" ? "2px solid " +_colors.tertiary : winner ? "3px solid" + _colors.green : "",
     "&:hover": {
         cursor: hover ? "pointer" : "",
         opacity: hover ? 0.8 : 1

@@ -17,24 +17,24 @@ const Waiting = ({ warrior, currentFightId, setCurrentFightId, setWaitingScreen,
             <Grid container>
                 <CssGrid
                     item
-                    xs={4}
+                    xs={5}
                 >
                     <Avatar
-                        name={warrior.name}
-                        size="md"
-                        src={_avatars[warrior.warriorType]}
+                        name={warrior.Name}
+                        size="lg"
+                        src={_avatars[warrior.WarriorType]}
                     />
                 </CssGrid>
                 <CssGrid
                     item
-                    xs={4}
+                    xs={2}
                     style={{ fontSize: 70 }}
                 >
                     VS
                 </CssGrid>
                 <CssGrid
                     item
-                    xs={4}
+                    xs={5}
                 >
                     <Avatar
                         name="Unknown"
@@ -44,7 +44,7 @@ const Waiting = ({ warrior, currentFightId, setCurrentFightId, setWaitingScreen,
             </Grid>
 
             <GreenBox>
-                Waiting for 2nd player to join
+                Waiting for 2nd player to join...
             </GreenBox>
 
             <Button

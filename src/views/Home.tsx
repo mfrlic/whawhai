@@ -10,15 +10,15 @@ import { useState } from "react";
 import { Warrior } from "../components/Router";
 
 const Home = ({ warrior, setWarriorSelection, setWarrior, validateForm }: { warrior: Warrior, setWarriorSelection: React.Dispatch<React.SetStateAction<boolean>>, setWarrior: React.Dispatch<React.SetStateAction<Warrior>>, validateForm: () => void }) => {
-    const [attackSelect, setAttackSelect] = useState<number>(0)
+    const [attackSelect, setAttackSelect] = useState<number>(0) //attack selection for one of the 3 rounds - 0: unselected, 1,2,3: round x
 
     return (
         <>
             <Title>Whawhai</Title>
-            <div style={{ textAlign: "center" }}>
+            <div>
                 <div
                     style={{
-                        display: "flex",
+                        display: "flex", //center horizontally and vertically
                         justifyContent: "center",
                         alignItems: "center",
                     }}
@@ -26,17 +26,17 @@ const Home = ({ warrior, setWarriorSelection, setWarrior, validateForm }: { warr
                     <Avatar
                         name=""
                         size="md"
-                        src={_avatars[warrior.warriorType]}
+                        src={_avatars[warrior.WarriorType]}
                         hover="true"
                         onClick={() => setWarriorSelection(true)}
                     />
 
                     <Input
-                        placeholder="$WARRIOR-NAME"
-                        value={warrior.name}
+                        placeholder="WARRIOR NAME"
+                        value={warrior.Name}
                         onChange={(e) =>
                             setWarrior((old) => {
-                                return { ...old, name: e.target.value };
+                                return { ...old, Name: e.target.value };
                             })
                         }
                     />
@@ -47,7 +47,7 @@ const Home = ({ warrior, setWarriorSelection, setWarrior, validateForm }: { warr
                         marginTop: 20,
                     }}
                 >
-                    {attackSelect === 0 ? warrior.attacks.map((attack, index) => (
+                    {attackSelect === 0 ? warrior.Attacks.map((attack, index) => (
                         <Select
                             key={"sel" + attack + index}
 
@@ -62,12 +62,12 @@ const Home = ({ warrior, setWarriorSelection, setWarrior, validateForm }: { warr
                             value={attack}
                             onClick={() => setAttackSelect(index + 1)}
                         >
-                            {attack === -99 ? "Attack for round #" + (index + 1) : warriorAttacks[warrior.warriorType][attack]}
+                            {attack === -99 ? "Attack for round #" + (index + 1) : warriorAttacks[warrior.WarriorType][attack]}
                         </Select>
-                    )) : warriorAttacks[warrior.warriorType].map((key, i) => (
+                    )) : warriorAttacks[warrior.WarriorType].map((key, i) => (
                         <Select
                             style={{
-                                backgroundColor: warrior.attacks[attackSelect - 1] === i ? _colors.green : i === 0
+                                backgroundColor: warrior.Attacks[attackSelect - 1] === i ? _colors.green : i === 0
                                     ? _colors.secondary
                                     : i === 1
                                         ? _colors.secondary80
@@ -79,16 +79,16 @@ const Home = ({ warrior, setWarriorSelection, setWarrior, validateForm }: { warr
                                 setWarrior((old) => {
                                     return {
                                         ...old,
-                                        attacks: [
+                                        Attacks: [
                                             attackSelect === 1
                                                 ? i
-                                                : old.attacks[0],
+                                                : old.Attacks[0],
                                             attackSelect === 2
                                                 ? i
-                                                : old.attacks[1],
+                                                : old.Attacks[1],
                                             attackSelect === 3
                                                 ? i
-                                                : old.attacks[2],
+                                                : old.Attacks[2],
                                         ],
                                     };
                                 });
